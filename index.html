@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Prediction App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='w3.css') }}">
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 50%; margin: auto; }
+        h1 { text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vehicle Cost Prediction</h1>
+        <form action="{{ url_for('predict') }}" method="POST">
+            <div>
+                <label for="invoice_date"><b>Invoice Date (YYYY-MM-DD)</b></label>
+                <input type="date" name="invoice_date" required>
+            </div>
+            <div>
+                <label for="job_card_date"><b>Job Card Date (YYYY-MM-DD)</b></label>
+                <input type="date" name="job_card_date" required>
+            </div>
+            <div>
+                <label for="business_partner_name"><b>Business Partner Name</b></label>
+                <input type="text" name="business_partner_name" required>
+            </div>
+            <div>
+                <label for="vehicle_no"><b>Vehicle Number</b></label>
+                <input type="text" name="vehicle_no" required>
+            </div>
+            <div>
+                <label for="vehicle_model"><b>Vehicle Model</b></label>
+                <input type="text" name="vehicle_model" required>
+            </div>
+            <div>
+                <label for="current_km_reading"><b>Current KM Reading</b></label>
+                <input type="number" name="current_km_reading" step="any" required>
+            </div>
+            <div>
+                <label for="invoice_line_text"><b>Invoice Line Text</b></label>
+                <input type="text" name="invoice_line_text" required>
+            </div>
+            <button type="submit" class="w3-button w3-dark-grey" style="width:100%;">Predict</button>
+        </form>
+        {% if prediction_text %}
+            <h2 class="w3-text-blue w3-center">{{ prediction_text }}</h2>
+        {% endif %}
+    </div>
+</body>
+</html>
