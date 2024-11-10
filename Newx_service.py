@@ -1,11 +1,11 @@
 import numpy as np
 from flask import Flask, request, render_template
-import pickle
+import joblib  # Changed from pickle to joblib
 
 app = Flask(__name__)
 
-# Load the trained model
-model = pickle.load(open('random_forest_regressor.pkl', 'rb'))
+# Load the trained model using joblib
+model = joblib.load('random_forest_regressor.joblib')  # Updated to load joblib file
 
 @app.route('/')
 def home():
