@@ -6,10 +6,11 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# Load the trained model and preprocessing tools (scaler, encoders)
+# Load the trained model
 model = joblib.load('random_forest_regressor.joblib')
-# Load the scaler if one was used during model training
-# scaler = joblib.load('scaler.joblib')  # If you used StandardScaler
+
+# Load the scaler if it was used during model training
+scaler = joblib.load('scaler.joblib')  # Load the scaler
 
 # Load any label encoders (if needed, you should have saved the encoders during training)
 # label_encoder = joblib.load('label_encoder.joblib')
@@ -70,18 +71,17 @@ def predict():
         })
 
         # Preprocessing: Handle categorical variables (e.g., One-Hot Encoding)
-        input_data = pd.get_dummies(
-            input_data, columns=['business_partner_name', 'vehicle_model'])
+        input_data = pd.get_dummies(input_data, columns=['business_partner_name', 'vehicle_model'])
 
         # Apply scaling to 'current_km_reading' if the model was trained with it scaled
-        input_data['current_km_reading'] = scaler.transform(
-            input_data[['current_km_reading']])
+        if 'current_km_reading' in input_data.columns:
+            input_data['current_km_reading'] = scaler.transform(input_data[['current_km_reading']])
 
         # Define the model's expected column names (based on the training)
         model_columns = [
-            'invoice_day', 'invoice_month', 'invoice_year',
-            'current_km_reading', 'business_partner_name_X', 'vehicle_model_Y',
-            'days_diff'
+            'invoice_day', 'invoice_month', 'invoice_year', 
+            'current_km_reading', 'business_partner_name_X', 
+            'vehicle_model_Y', 'days_diff'
         ]  # Replace with actual columns from training
 
         # Check for missing columns and fill them with zero if needed
@@ -97,25 +97,23 @@ def predict():
         output = prediction[0]
 
         # Render the result in the template
-        return render_template(
-            'index.html', prediction_text=f'Predicted Vehicle Cost: {output}')
+        return render_template('index.html', prediction_text=f'Predicted Vehicle Cost: {output}')
 
     except ValueError as e:
         # Handle missing input fields or conversion errors
         return render_template(
             'index.html',
-            prediction_text=
-            f"Error: {str(e)}. Please ensure all fields are filled out correctly."
+            prediction_text=f"Error: {str(e)}. Please ensure all fields are filled out correctly."
         )
 
     except KeyError as e:
         # Handle missing columns in the DataFrame (in case get_dummies() doesn't generate the right columns)
         return render_template(
             'index.html',
-            prediction_text=
-            f"Error: Missing column for {str(e)}. Please check input data.")
+            prediction_text=f"Error: Missing column for {str(e)}. Please check input data."
+        )
 
     except Exception as e:
         # Catch any other exceptions
-        return render_template('index.html',
-                               prediction_text=f"An error occurred: {str(e)}")
+        return render_template('index.html', prediction_text=f"An error occurred: {str(e)}")
+
