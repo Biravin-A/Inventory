@@ -1,5 +1,6 @@
 # app.py
 from flask import Flask, request, render_template
+from urllib.parse import quote as url_quote
 import joblib
 import pandas as pd
 from datetime import datetime
